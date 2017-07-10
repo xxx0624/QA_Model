@@ -1,0 +1,25 @@
+#ignore train file
+train
+!train/
+
+#ignore test file
+test
+!test/
+
+*.json
+*.zip
+*.doc
+*.docx
+*.pdf
+*.tmp
+
+.idea/*
+#log/*
+corpus/nlpcc16-entity-data/*
+
+
+*.log
+*.txt
+*.xlsx
+*.pyc
+
