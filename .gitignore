@@ -16,10 +16,17 @@ test
 .idea/*
 #log/*
 corpus/nlpcc16-entity-data/*
+text_classification-master/*
+corpus/fiqa/*
+FIQA_CNN/*
+log/fiqa/*
+MPCNN-sentence-similarity/sts/*
 
 
 *.log
 *.txt
 *.xlsx
 *.pyc
+*.tsv
+*.csv
 
