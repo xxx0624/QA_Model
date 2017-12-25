@@ -13,11 +13,17 @@ from gensim.models.keyedvectors import KeyedVectors
 def get_sentence(train_data, test_data, dev_data):
     sentence = []
     with codecs.open(train_data, 'r', encoding='utf-8') as fr:
+        id = 0
         for line in fr:
+            print '[', id, ']...train...'
+            id += 1
             line = line.strip()
             if line != "":
+                index = line.find('\t')
+                if index == -1:
+                    continue
                 # label = line.split("\t")[0]
-                line = line.split("\t")[1]
+                line = line[index+1:]
                 words = pseg.cut(line)
                 wlist = []
                 tlist = []
@@ -27,11 +33,17 @@ def get_sentence(train_data, test_data, dev_data):
                 sentence.append(wlist)
                 sentence.append(tlist)
     with codecs.open(test_data, 'r', encoding='utf-8') as fr:
+        id = 0
         for line in fr:
+            print '[', id, ']...test...'
+            id += 1
             line = line.strip()
             if line != "":
+                index = line.find('\t')
+                if index == -1:
+                    continue
                 # label = line.split("\t")[0]
-                line = line.split("\t")[1]
+                line = line[index+1:]
                 words = pseg.cut(line)
                 wlist = []
                 tlist = []
@@ -41,10 +53,17 @@ def get_sentence(train_data, test_data, dev_data):
                 sentence.append(wlist)
                 sentence.append(tlist)
     with codecs.open(dev_data, 'r', encoding='utf-8') as fr:
+        id = 0
         for line in fr:
+            print '[', id, ']...dev...'
+            id += 1
             line = line.strip()
             if line != "":
+                index = line.find('\t')
+                if index == -1:
+                    continue
                 # label = line.split("\t")[0]
+                line = line[index+1:]
                 line = line.split("\t")[1]
                 words = pseg.cut(line)
                 wlist = []
@@ -58,8 +77,8 @@ def get_sentence(train_data, test_data, dev_data):
 
 
 def train():
-    train_data = 'cnews.test.txt'
-    test_data = 'cnews.train.txt'
+    train_data = 'cnews.train.txt'
+    test_data = 'cnews.test.txt'
     dev_data = 'cnews.val.txt'
     out_path = 'word2vec.bin'
     model = Word2Vec(sg=1,

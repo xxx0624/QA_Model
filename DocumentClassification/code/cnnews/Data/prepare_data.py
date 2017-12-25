@@ -107,9 +107,12 @@ with codecs.open(train_file, 'r', encoding='utf-8') as fr:
         line = line.strip()
         print '[', line_cnt, '] prepare train data...'
         if line != "":
-            label = line.split("\t")[0]
+            index = line.find('\t')
+            if index == -1:
+                continue
+            label = line[:index]
             fw_label.write(str(label) + '\n')
-            line = line.split("\t")[1]
+            line = line[index+1:]
             words = pseg.cut(line)
             line_cnt += 1
             id = 0
@@ -148,9 +151,12 @@ with codecs.open(test_file, 'r', encoding='utf-8') as fr:
         line = line.strip()
         print '[', line_cnt, '] prepare test data...'
         if line != "":
-            label = line.split("\t")[0]
+            index = line.find('\t')
+            if index == -1:
+                continue
+            label = line[:index]
             fw_label.write(str(label) + '\n')
-            line = line.split("\t")[1]
+            line = line[index+1:]
             words = pseg.cut(line)
             line_cnt += 1
             id = 0
@@ -189,9 +195,12 @@ with codecs.open(dev_file, 'r', encoding='utf-8') as fr:
         line = line.strip()
         print '[', line_cnt, '] prepare dev data...'
         if line != "":
-            label = line.split("\t")[0]
+            index = line.find('\t')
+            if index == -1:
+                continue
+            label = line[:index]
             fw_label.write(str(label) + '\n')
-            line = line.split("\t")[1]
+            line = line[index+1:]
             words = pseg.cut(line)
             line_cnt += 1
             id = 0
