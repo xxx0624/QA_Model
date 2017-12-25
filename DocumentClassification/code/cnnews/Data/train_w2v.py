@@ -64,7 +64,6 @@ def get_sentence(train_data, test_data, dev_data):
                     continue
                 # label = line.split("\t")[0]
                 line = line[index+1:]
-                line = line.split("\t")[1]
                 words = pseg.cut(line)
                 wlist = []
                 tlist = []
