@@ -147,13 +147,6 @@ test_tag_data_path = os.path.join('Data', 'testing.seg.tag.emb')
 test_label_data_path = os.path.join('Data', 'testing.seg.label.emb')
 x_train, y_train, x_test, y_test = load_train_data(train_emb_data_path, train_tag_data_path, train_label_data_path,
                                                    test_emb_data_path, test_tag_data_path, test_label_data_path)
-logging.basicConfig(level=logging.DEBUG,
-                    format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
-                    datefmt='%a, %d %b %Y %H:%M:%S',
-                    filename='log/' + GetNowTime() + '.log',
-                    filemode='w')
-
-logging.info('lr=0.001,epsilon=1e-08,epochs=50,train-batch-size=128,test-batch-size=64')
 
 model = Sequential()
 model.add(Conv1D(500, 3, activation='relu', input_shape=(150, 600)))
@@ -173,9 +166,20 @@ score = model.evaluate(x_test, y_test, batch_size=64)
 print 'loss=', score[0], ' acc=', score[1]
 logging.info(str(score[0]) + ',' + str(score[1]))
 
-# save
+now_time = GetNowTime()
+#logging
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
+                    datefmt='%a, %d %b %Y %H:%M:%S',
+                    filename='log/' + now_time + '.log',
+                    filemode='w')
+logging.info(str(score[0])+','+str(score[1]))
+
+#save
 model_json = model.to_json()
-model.save('model/cnn-model')
+codecs.open('model/'+now_time+'-model_json', 'w', encoding='utf-8').write(model_json)
+model.save_weights('model/'+now_time+'-model_weights.h5')
+model.save('model/'+now_time+'-model')
 
 # predict
 # result = model.predict(x_dev, batch_size=5, verbose=0)

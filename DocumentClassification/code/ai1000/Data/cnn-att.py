@@ -204,7 +204,7 @@ now_time = GetNowTime()
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
                     datefmt='%a, %d %b %Y %H:%M:%S',
-                    filename='log/' + GetNowTime() + '.log',
+                    filename='log/' + now_time + '.log',
                     filemode='w')
 logging.info(str(score[0]) + ',' + str(score[1]))
 
