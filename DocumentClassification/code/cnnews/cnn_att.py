@@ -255,7 +255,7 @@ word_vector_dim = int(getConfig('cnn', 'VEC_DIM'))
 # end config
 
 model = Sequential()
-model.add(Conv1D(500, 3, activation='relu', input_shape=(300, 600)))
+model.add(Conv1D(500, 3, activation='relu', input_shape=(300, 900)))
 model.add(MaxPooling1D(3))
 model.add(Dropout(1.0))
 
@@ -269,7 +269,12 @@ model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['accurac
 # test
 model.fit(x_train, y_train, batch_size=128, epochs=50)
 score = model.evaluate(x_test, y_test, batch_size=64)
-print 'loss=', score[0], ' acc=', score[1]
+print 'test loss=', score[0], ' acc=', score[1]
+
+# dev
+model.fit(x_train, y_train, batch_size=128, epochs=50)
+score = model.evaluate(x_test, y_test, batch_size=64)
+print 'dev loss=', score[0], ' acc=', score[1]
 
 now_time = GetNowTime()
 # logging

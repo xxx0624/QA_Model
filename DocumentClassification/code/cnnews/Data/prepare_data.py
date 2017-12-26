@@ -19,9 +19,9 @@ train_label_file = 'cnews.train.label'
 test_emb_file = 'cnews.test.emb'
 test_tag_emb_file = 'cnews.test.tag.emb'
 test_label_file = 'cnews.test.label'
-dev_emb_file = 'cnews.test.emb'
-dev_tag_emb_file = 'cnews.test.tag.emb'
-dev_label_file = 'cnews.test.label'
+dev_emb_file = 'cnews.dev.emb'
+dev_tag_emb_file = 'cnews.dev.tag.emb'
+dev_label_file = 'cnews.dev.label'
 
 WORDS_DIM = 300
 VEC_DIM = 300
@@ -95,7 +95,8 @@ def encode_sent(w2v, tag_w2v, sentence, vec_dim):
     return x
 
 
-def label(word):
+def get_label(word):
+    word = str(word)
     label_list = {
         '体育': 0,
         '娱乐': 1,
@@ -131,6 +132,9 @@ with codecs.open(train_file, 'r', encoding='utf-8') as fr:
             if index == -1:
                 continue
             label = line[:index]
+            label = get_label(label)
+            if label == -1:
+                raise Exception('train label...' + str(line))
             fw_label.write(str(label) + '\n')
             line = line[index+1:]
             words = pseg.cut(line)
@@ -175,6 +179,9 @@ with codecs.open(test_file, 'r', encoding='utf-8') as fr:
             if index == -1:
                 continue
             label = line[:index]
+            label = get_label(label)
+            if label == -1:
+                raise Exception('test label...' + str(line))
             fw_label.write(str(label) + '\n')
             line = line[index+1:]
             words = pseg.cut(line)
@@ -219,6 +226,9 @@ with codecs.open(dev_file, 'r', encoding='utf-8') as fr:
             if index == -1:
                 continue
             label = line[:index]
+            label = get_label(label)
+            if label == -1:
+                raise Exception('dev label...' + str(line))
             fw_label.write(str(label) + '\n')
             line = line[index+1:]
             words = pseg.cut(line)
