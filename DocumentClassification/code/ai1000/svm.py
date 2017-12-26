@@ -146,8 +146,7 @@ if __name__ == '__main__':
                                                    test_emb_data_path, test_tag_data_path, test_label_data_path)
     svm(x_train, y_train, x_test, y_test)
     svr(x_train, y_train, x_test, y_test)
-    svc(x_train, y_train, x_test, y_test)
 
     svm(x_train_2, y_train, x_test_2, y_test)
     svr(x_train_2, y_train, x_test_2, y_test)
-    svc(x_train_2, y_train, x_test_2, y_test)
+    
