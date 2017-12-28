@@ -41,15 +41,16 @@ def calculate_cos(vec1, vec2):
     down_sum2 = math.sqrt(down_sum2)
     return float(up_sum / (down_sum1 * down_sum2))
 
-
+#TODO add softmax
 def attention_word_vec(sentence_vec):
     # param:  sentence_vec shape:(150,300)
     # return: shape(150,600)
+    D = 3 #TODO
     sum_list = []
     for i in range(len(sentence_vec)):
         temp_sum = float(0)
-        for j in range(len(sentence_vec)):
-            if i != j:
+        for j in range(i-D, i + D + 1, 1):
+            if i != j and j > 0 and j < len(sentence_vec):
                 temp_sum += calculate_cos(sentence_vec[i], sentence_vec[j])
         sum_list.append(temp_sum)
     new_sentence_vec = []
@@ -239,9 +240,9 @@ train_label_data_path = os.path.join('Data', 'cnews.train.label')
 test_emb_data_path = os.path.join('Data', 'cnews.test.emb')
 test_tag_data_path = os.path.join('Data', 'cnews.test.tag.emb')
 test_label_data_path = os.path.join('Data', 'cnews.test.label')
-dev_emb_data_path = os.path.join('Data', 'cnews.val.emb')
-dev_tag_data_path = os.path.join('Data', 'cnews.val.tag.emb')
-dev_label_data_path = os.path.join('Data', 'cnews.val.label')
+dev_emb_data_path = os.path.join('Data', 'cnews.dev.emb')
+dev_tag_data_path = os.path.join('Data', 'cnews.dev.tag.emb')
+dev_label_data_path = os.path.join('Data', 'cnews.dev.label')
 x_train, y_train, x_test, y_test, x_dev, y_dev = load_train_data(train_emb_data_path, train_tag_data_path,
                                                                  train_label_data_path,
                                                                  test_emb_data_path, test_tag_data_path,

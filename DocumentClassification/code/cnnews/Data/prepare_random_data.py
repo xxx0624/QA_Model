@@ -233,9 +233,9 @@ fw_tag = codecs.open(dev_tag_emb_file, 'w', encoding='utf-8')
 fw_label = codecs.open(dev_label_file, 'w', encoding='utf-8')
 cnt = 0
 while cnt < DEV_NUM:
-    cnt += 1
     random_index = np.random.randint(0, all_cnt)
     if not random_index in dic:
+        cnt += 1
         dic[random_index] = True
         words = dev_sentence_list[random_index]
         tags = dev_tag_list[random_index]

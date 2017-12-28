@@ -203,9 +203,9 @@ train_label_data_path = os.path.join('Data', 'cnews.train.label')
 test_emb_data_path = os.path.join('Data', 'cnews.test.emb')
 test_tag_data_path = os.path.join('Data', 'cnews.test.tag.emb')
 test_label_data_path = os.path.join('Data', 'cnews.test.label')
-dev_emb_data_path = os.path.join('Data', 'cnews.val.emb')
-dev_tag_data_path = os.path.join('Data', 'cnews.val.tag.emb')
-dev_label_data_path = os.path.join('Data', 'cnews.val.label')
+dev_emb_data_path = os.path.join('Data', 'cnews.dev.emb')
+dev_tag_data_path = os.path.join('Data', 'cnews.dev.tag.emb')
+dev_label_data_path = os.path.join('Data', 'cnews.dev.label')
 x_train, y_train, x_test, y_test, x_dev, y_dev = load_train_data(train_emb_data_path, train_tag_data_path,
                                                                  train_label_data_path,
                                                                  test_emb_data_path, test_tag_data_path,
