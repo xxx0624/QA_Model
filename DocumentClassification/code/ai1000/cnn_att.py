@@ -1,4 +1,4 @@
-import sys, codecs, os, logging
+import sys, codecs, os, logging, time, math
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -15,11 +15,45 @@ from keras.layers import Conv2D, MaxPooling2D, Conv1D, MaxPooling1D
 from keras.optimizers import SGD, Adam
 from keras.callbacks import EarlyStopping
 
-import time
-
 
 def GetNowTime():
     return str(time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime(time.time())))
+
+
+def calculate_cos(vec1, vec2):
+    # 1, 300
+    # elements of vec is int
+    up_sum = np.multiply(np.mat(vec1), np.mat(vec2)).sum(axis=1).tolist()[0][0]
+    down_sum1 = float(0)
+    down_sum2 = float(0)
+    index = 0
+    for i in range(len(vec1)):
+        down_sum1 += vec1[i] * vec1[i]
+        down_sum2 += vec2[i] * vec2[i]
+    down_sum1 = math.sqrt(down_sum1)
+    down_sum2 = math.sqrt(down_sum2)
+    return float(up_sum / (down_sum1 * down_sum2))
+
+
+def attention_word_vec(sentence_vec):
+    # param:  sentence_vec shape:(150,300)
+    # return: shape(150,600)
+    sum_list = []
+    for i in range(len(sentence_vec)):
+        temp_sum = float(0)
+        for j in range(len(sentence_vec)):
+            if i != j:
+                temp_sum += calculate_cos(sentence_vec[i], sentence_vec[j])
+        sum_list.append(temp_sum)
+    new_sentence_vec = []
+    for i in range(len(sentence_vec)):
+        temp_sentence_vec = []
+        for j in range(len(sentence_vec[0])):
+            temp_sentence_vec.append(sentence_vec[i][j] * sum_list[i])
+        new_sentence_vec.append(temp_sentence_vec)
+    for i in range(len(sentence_vec)):
+        sentence_vec[i].extend(new_sentence_vec[i])
+    return sentence_vec
 
 
 def load_train_data(train_emb_data_path, train_tag_data_path, train_label_data_path,
@@ -40,7 +74,7 @@ def load_train_data(train_emb_data_path, train_tag_data_path, train_label_data_p
                 index += 1
                 current_sentence_emb.append(new_emb_list)
                 if index % 150 == 0:
-                    x_train.append(current_sentence_emb)
+                    x_train.append(attention_word_vec(current_sentence_emb))
                     current_sentence_emb = []
                 print index / 150, ' x-train(1) size = ', len(x_train)
 
@@ -72,7 +106,7 @@ def load_train_data(train_emb_data_path, train_tag_data_path, train_label_data_p
                 index += 1
                 current_sentence_emb.append(new_emb_list)
                 if index % 150 == 0:
-                    x_test.append(current_sentence_emb)
+                    x_test.append(attention_word_vec(current_sentence_emb))
                     current_sentence_emb = []
                 print index / 150, ' x-test(1) size = ', len(x_test)
 
@@ -101,7 +135,7 @@ x_train, y_train, x_test, y_test = load_train_data(train_emb_data_path, train_ta
                                                    test_emb_data_path, test_tag_data_path, test_label_data_path)
 
 model = Sequential()
-model.add(Conv1D(500, 3, activation='relu', input_shape=(150, 300)))
+model.add(Conv1D(500, 3, activation='relu', input_shape=(150, 600)))
 model.add(MaxPooling1D(3))
 model.add(Dropout(1.0))
 
@@ -119,19 +153,19 @@ score = model.evaluate(x_test, y_test, batch_size=128)
 print 'loss=', score[0], ' acc=', score[1]
 
 now_time = GetNowTime()
-#logging
+# logging
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
                     datefmt='%a, %d %b %Y %H:%M:%S',
                     filename='log/' + now_time + '.log',
                     filemode='w')
-logging.info(str(score[0])+','+str(score[1]))
+logging.info(str(score[0]) + ',' + str(score[1]))
 
-#save
+# save
 model_json = model.to_json()
-codecs.open('model/'+now_time+'-model_json', 'w', encoding='utf-8').write(model_json)
-#model.save_weights('model/'+now_time+'-model_weights.h5')
-model.save('model/'+now_time+'-model')
+codecs.open('model/' + now_time + '-model_json', 'w', encoding='utf-8').write(model_json)
+#model.save_weights('model/' + now_time + '-model_weights.h5')
+model.save('model/' + now_time + '-model')
 
 # predict
 # result = model.predict(x_dev, batch_size=5, verbose=0)
