@@ -13,6 +13,7 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D, Conv1D, MaxPooling1D
 from keras.optimizers import SGD, Adam
+from keras.callbacks import EarlyStopping
 
 
 # get config
@@ -268,14 +269,14 @@ adam = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
 model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['accuracy'])
 
 # test
-model.fit(x_train, y_train, batch_size=128, epochs=50)
-score = model.evaluate(x_test, y_test, batch_size=64)
-print 'test loss=', score[0], ' acc=', score[1]
+early_stopping = EarlyStopping(monitor='acc', patience=3, mode='max')
+model.fit(x_train, y_train, batch_size=128, epochs=50, callbacks=[early_stopping])
+score_test = model.evaluate(x_test, y_test, batch_size=64)
+print 'loss=', score_test[0], ' acc=', score_test[1]
 
 # dev
-model.fit(x_train, y_train, batch_size=128, epochs=50)
-score = model.evaluate(x_test, y_test, batch_size=64)
-print 'dev loss=', score[0], ' acc=', score[1]
+score_dev = model.evaluate(x_dev, y_dev, batch_size=64)
+print 'dev loss=', score_dev[0], ' acc=', score_dev[1]
 
 now_time = GetNowTime()
 # logging
@@ -284,12 +285,14 @@ logging.basicConfig(level=logging.DEBUG,
                     datefmt='%a, %d %b %Y %H:%M:%S',
                     filename='log/' + now_time + '.log',
                     filemode='w')
-logging.info(str(score[0]) + ',' + str(score[1]))
+logging.info("test:" + str(score_test[0]) + ',' + str(score_test[1]))
+logging.info("dev:" + str(score_dev[0]) + ',' + str(score_dev[1]))
+
 
 # save
 model_json = model.to_json()
 codecs.open('model/' + now_time + '-model_json', 'w', encoding='utf-8').write(model_json)
-model.save_weights('model/' + now_time + '-model_weights.h5')
+#model.save_weights('model/' + now_time + '-model_weights.h5')
 model.save('model/' + now_time + '-model')
 
 # predict

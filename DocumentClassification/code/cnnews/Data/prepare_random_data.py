@@ -26,12 +26,27 @@ dev_label_file = 'cnews.dev.label'
 
 WORDS_DIM = 200
 VEC_DIM = 300
+TRAIN_EVERY_CATEGORY_NUM = 500
+TEST_DEV_EVERY_CATEGORY_NUM = 100
 UNKNOWN = 'UNKNOWN'
 vectorsWordFile = 'word2vec.bin'
 vectorsTagFile = 'tag_embedding.bin'
-TRAIN_NUM = 2000
+TRAIN_NUM = 5000
 TEST_NUM = 1000
 DEV_NUM = 1000
+
+label_list = {
+        '体育': 0,
+        '娱乐': 1,
+        '家居': 2,
+        '房产': 3,
+        '教育': 4,
+        '时尚': 5,
+        '时政': 6,
+        '游戏': 7,
+        '科技': 8,
+        '财经': 9
+    }
 
 
 def load_vectors(vectorsBaikeFile):
@@ -101,22 +116,25 @@ def encode_sent(w2v, tag_w2v, sentence, vec_dim):
 
 def get_label(word):
     word = str(word)
-    label_list = {
-        '体育': 0,
-        '娱乐': 1,
-        '家居': 2,
-        '房产': 3,
-        '教育': 4,
-        '时尚': 5,
-        '时政': 6,
-        '游戏': 7,
-        '科技': 8,
-        '财经': 9
-    }
+    global label_list
     if word in label_list:
         return label_list[word]
     else:
         return -1
+
+
+def initDict():
+    d = {}
+    for k in label_list:
+        d[label_list[k]] = 0
+    return d
+
+
+def satisfy(dict, aim_num):
+    for k in dict:
+        if dict[k] < aim_num:
+            return False
+    return True
 
 
 def get_sentences(file_name):
@@ -156,105 +174,123 @@ test_sentence_list, test_tag_list, test_label_list = get_sentences(test_file)
 dev_sentence_list, dev_tag_list, dev_label_list = get_sentences(dev_file)
 
 #train data
-dic = {}
+dic_train = {}
+dict_train_category = initDict()
 all_cnt = len(train_sentence_list)
 fw_word = codecs.open(train_emb_file, 'w', encoding='utf-8')
 fw_tag = codecs.open(train_tag_emb_file, 'w', encoding='utf-8')
 fw_label = codecs.open(train_label_file, 'w', encoding='utf-8')
 cnt = 0
-while cnt < TRAIN_NUM:
-    random_index = np.random.randint(0, all_cnt)
-    if not random_index in dic:
-        cnt += 1
-        dic[random_index] = True
-        words = train_sentence_list[random_index]
-        tags = train_tag_list[random_index]
+while cnt < all_cnt:
+    random_index = cnt
+    cnt += 1
+    if not random_index in dic_train:
         label = get_label(train_label_list[random_index])
         if label == -1:
             raise Exception('train label...' + str(random_index))
-        fw_label.write(str(label) + '\n')
-        words_emb = encode_sent(w2v, tag_w2v, words, VEC_DIM)
-        tags_emb = encode_sent(w2v, tag_w2v, tags, VEC_DIM)
-        for i in range(len(words_emb)):
-            for j in range(len(words_emb[0])):
-                if j == 0:
-                    fw_word.write(str(words_emb[i][j]))
-                    fw_tag.write(str(tags_emb[i][j]))
-                else:
-                    fw_word.write(',' + str(words_emb[i][j]))
-                    fw_tag.write(',' + str(tags_emb[i][j]))
-            fw_word.write('\n')
-            fw_tag.write('\n')
+        if dict_train_category[int(label)] < TRAIN_EVERY_CATEGORY_NUM:
+            words = train_sentence_list[random_index]
+            tags = train_tag_list[random_index]
+            #cnt += 1
+            dic_train[random_index] = True
+            dict_train_category[int(label)] += 1
+            fw_label.write(str(label) + '\n')
+            words_emb = encode_sent(w2v, tag_w2v, words, VEC_DIM)
+            tags_emb = encode_sent(w2v, tag_w2v, tags, VEC_DIM)
+            for i in range(len(words_emb)):
+                for j in range(len(words_emb[0])):
+                    if j == 0:
+                        fw_word.write(str(words_emb[i][j]))
+                        fw_tag.write(str(tags_emb[i][j]))
+                    else:
+                        fw_word.write(',' + str(words_emb[i][j]))
+                        fw_tag.write(',' + str(tags_emb[i][j]))
+                fw_word.write('\n')
+                fw_tag.write('\n')
+            if satisfy(dict_train_category, TRAIN_EVERY_CATEGORY_NUM) == True:
+                break
 fw_word.close()
 fw_label.close()
 fw_tag.close()
 
 
 #test data
-dic = {}
+dic_test = {}
+dict_test_category = initDict()
 all_cnt = len(test_sentence_list)
 fw_word = codecs.open(test_emb_file, 'w', encoding='utf-8')
 fw_tag = codecs.open(test_tag_emb_file, 'w', encoding='utf-8')
 fw_label = codecs.open(test_label_file, 'w', encoding='utf-8')
 cnt = 0
-while cnt < TEST_NUM:
-    random_index = np.random.randint(0, all_cnt)
-    if not random_index in dic:
-        cnt += 1
-        dic[random_index] = True
-        words = test_sentence_list[random_index]
-        tags = test_tag_list[random_index]
+while cnt < all_cnt:
+    random_index = cnt
+    cnt += 1
+    if not random_index in dic_test:
         label = get_label(test_label_list[random_index])
         if label == -1:
             raise Exception('test label...' + str(random_index))
-        fw_label.write(str(label) + '\n')
-        words_emb = encode_sent(w2v, tag_w2v, words, VEC_DIM)
-        tags_emb = encode_sent(w2v, tag_w2v, tags, VEC_DIM)
-        for i in range(len(words_emb)):
-            for j in range(len(words_emb[0])):
-                if j == 0:
-                    fw_word.write(str(words_emb[i][j]))
-                    fw_tag.write(str(tags_emb[i][j]))
-                else:
-                    fw_word.write(',' + str(words_emb[i][j]))
-                    fw_tag.write(',' + str(tags_emb[i][j]))
-            fw_word.write('\n')
-            fw_tag.write('\n')
+        if dict_test_category[int(label)] < TEST_DEV_EVERY_CATEGORY_NUM:
+            #cnt += 1
+            words = test_sentence_list[random_index]
+            tags = test_tag_list[random_index]
+            dic_test[random_index] = True
+            dict_test_category[int(label)] += 1
+            fw_label.write(str(label) + '\n')
+            words_emb = encode_sent(w2v, tag_w2v, words, VEC_DIM)
+            tags_emb = encode_sent(w2v, tag_w2v, tags, VEC_DIM)
+            for i in range(len(words_emb)):
+                for j in range(len(words_emb[0])):
+                    if j == 0:
+                        fw_word.write(str(words_emb[i][j]))
+                        fw_tag.write(str(tags_emb[i][j]))
+                    else:
+                        fw_word.write(',' + str(words_emb[i][j]))
+                        fw_tag.write(',' + str(tags_emb[i][j]))
+                fw_word.write('\n')
+                fw_tag.write('\n')
+            if satisfy(dict_test_category, TEST_DEV_EVERY_CATEGORY_NUM) == True:
+                break
 fw_word.close()
 fw_label.close()
 fw_tag.close()
 
 
 #dev data
-dic = {}
+dic_dev = {}
+dict_dev_category = initDict()
 all_cnt = len(dev_sentence_list)
 fw_word = codecs.open(dev_emb_file, 'w', encoding='utf-8')
 fw_tag = codecs.open(dev_tag_emb_file, 'w', encoding='utf-8')
 fw_label = codecs.open(dev_label_file, 'w', encoding='utf-8')
 cnt = 0
-while cnt < DEV_NUM:
-    random_index = np.random.randint(0, all_cnt)
-    if not random_index in dic:
-        cnt += 1
-        dic[random_index] = True
-        words = dev_sentence_list[random_index]
-        tags = dev_tag_list[random_index]
+while cnt < all_cnt:
+    random_index = cnt
+    cnt += 1
+    if not random_index in dic_dev:
         label = get_label(dev_label_list[random_index])
         if label == -1:
             raise Exception('dev label...' + str(random_index))
-        fw_label.write(str(label) + '\n')
-        words_emb = encode_sent(w2v, tag_w2v, words, VEC_DIM)
-        tags_emb = encode_sent(w2v, tag_w2v, tags, VEC_DIM)
-        for i in range(len(words_emb)):
-            for j in range(len(words_emb[0])):
-                if j == 0:
-                    fw_word.write(str(words_emb[i][j]))
-                    fw_tag.write(str(tags_emb[i][j]))
-                else:
-                    fw_word.write(',' + str(words_emb[i][j]))
-                    fw_tag.write(',' + str(tags_emb[i][j]))
-            fw_word.write('\n')
-            fw_tag.write('\n')
+        if dict_dev_category[int(label)] < TEST_DEV_EVERY_CATEGORY_NUM:
+            #cnt += 1
+            words = dev_sentence_list[random_index]
+            tags = dev_tag_list[random_index]
+            dic_dev[random_index] = True
+            dict_dev_category[int(label)] += 1
+            fw_label.write(str(label) + '\n')
+            words_emb = encode_sent(w2v, tag_w2v, words, VEC_DIM)
+            tags_emb = encode_sent(w2v, tag_w2v, tags, VEC_DIM)
+            for i in range(len(words_emb)):
+                for j in range(len(words_emb[0])):
+                    if j == 0:
+                        fw_word.write(str(words_emb[i][j]))
+                        fw_tag.write(str(tags_emb[i][j]))
+                    else:
+                        fw_word.write(',' + str(words_emb[i][j]))
+                        fw_tag.write(',' + str(tags_emb[i][j]))
+                fw_word.write('\n')
+                fw_tag.write('\n')
+            if satisfy(dict_dev_category, TEST_DEV_EVERY_CATEGORY_NUM) == True:
+                break
 fw_word.close()
 fw_label.close()
 fw_tag.close()

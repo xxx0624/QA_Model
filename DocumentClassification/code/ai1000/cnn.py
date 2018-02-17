@@ -14,6 +14,7 @@ from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D, Conv1D, MaxPooling1D
 from keras.optimizers import SGD, Adam
 from keras.callbacks import EarlyStopping
+from keras.regularizers import l2
 
 import time
 
@@ -104,6 +105,7 @@ model = Sequential()
 model.add(Conv1D(500, 3, activation='relu', input_shape=(150, 300)))
 model.add(MaxPooling1D(3))
 model.add(Dropout(1.0))
+model.add(Conv1D(500,3))
 
 model.add(Flatten())
 model.add(Dense(11, activation='softmax'))
@@ -113,7 +115,7 @@ adam = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
 model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['accuracy'])
 
 # test
-early_stopping = EarlyStopping(monitor='acc', patience=4, mode='max')
+early_stopping = EarlyStopping(monitor='acc', patience=3, mode='max')
 model.fit(x_train, y_train, batch_size=128, epochs=50, callbacks=[early_stopping])
 score = model.evaluate(x_test, y_test, batch_size=128)
 print 'loss=', score[0], ' acc=', score[1]
