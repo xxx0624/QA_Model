@@ -1,25 +1,18 @@
-# Intro of QA-Model
+# Intro
 
-`NLPCC_CNN`: 2017 `NLPCC` DBQA 比赛：3rd(`MRR=0.685011`)
+### NLPCC_CNN
+[The conference on Natural Language Processing and Chinese Computing (NLPCC)](http://tcci.ccf.org.cn/conference/2017/) is the annual meeting of the CCF TCCI (Technical Committee of Chinese Information, China Computer Federation). NLPCC is a leading international conference specialized in the fields of Natural Language Processing (NLP) and Chinese Computing (CC). It serves as a main forum for researchers and practitioners from academia, industry, and government to share their ideas, research results and experiences, and to promote their research and technical innovations in the fields. 
 
-`CCIR_CNN`: 2017 `CCIR` 搜狗问答检索比赛：9th(`NDCG@3=0.7006 NDCG@5=0.7398`)
+`NLPCC_CNN` in the repo ranked 3rd in `NLPCC-2017` and `MRR` = 0.685011
 
-`DocumentClassification`: 包括AI1000文本分类 & CNEWS分类
+### CCIR_CNN
+[CCIR](http://huodong.sogou.com/sogou_ccir_qa) is a competition about Question Answering System. 
 
-`MPCNN-sentence-similarity`: Sentence Similarity Based on Attention
-
-# Run
-`NLPCC_CNN`:
-
-    Step1: corpus/nlpcc16-dbqa-data/train中readme
-
-    Step2: corpus/nlpcc16-dbqa-data/test中readme
-
-    Step3: cnn/theano/中readme
+`CCIR_CNN` in the repo ranked 9th in `CCIR-2017` and `NDCG@3` = 0.7006 `NDCG@5` = 0.7398
 
 
-    
-<br>
-Tips：目前在处理train和test数据时候用的分词是cnn.theano.util.word_segment.segment_word_filter_pos,
-如果需要更改可在corpus/nlpcc16-dbqa-data/train和corpus/nlpcc16-dbqa-data/test中的脚本自行替换函数
-(可替换为cnn.theano.util.word_segment.segment_word)
+### DocumentClassification
+DocumentClassification in the repo can be used to classify documents into some different fields.
+
+### MPCNN-sentence-similarity
+MPCNN-sentence-similarity in the repo can be used to calculate the similarity between different sentence.

@@ -1,7 +1,9 @@
-# cnn & lstm
+# How to run
 
-# Run
-    1. 准备corpus中train&test数据生成
-    2. 起飞：python qa_cnn.py or python qa qa_lstm.py
+1. prepare data
+2. python qa_cnn.py/qa_lstm.py
 
-Tips: log数据在QAModel/log/ccir目录中
+# Tips
+
+1. when scripts finished, you can check log in `QAModel/log/nlpcc`
+2. `qa_cnn.py` & `qa_lstm.py` apply different models and their performance may be not sure for different data corpus
